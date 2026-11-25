@@ -394,7 +394,63 @@
     .js .reveal .tech-pill { opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s, background 0.2s, border-color 0.2s, color 0.2s; }
     .js .reveal.in .tech-pill { opacity: 1; transform: none; }
 
+    /* ============ Advanced ============ */
+    #net { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+    /* Custom cursor */
+    .cur-dot, .cur-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 200; border-radius: 50%; opacity: 0; transition: opacity 0.3s; }
+    .cur-dot { width: 6px; height: 6px; background: #38bdf8; margin: -3px 0 0 -3px; box-shadow: 0 0 10px #38bdf8; }
+    .cur-ring { width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 1.5px solid rgba(56,189,248,0.6);
+      transition: width 0.25s, height 0.25s, margin 0.25s, background 0.25s, border-color 0.25s, opacity 0.3s; }
+    .cur-ring.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.9); }
+    body.has-cursor .cur-dot, body.has-cursor .cur-ring { opacity: 1; }
+    body.has-cursor, body.has-cursor a { cursor: none; }
+
+    /* Rotating conic border on project cards */
+    @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    .project-card::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+      background: conic-gradient(from var(--ang), transparent 0deg, #38bdf8 60deg, #818cf8 120deg, transparent 180deg, transparent 360deg);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0; transition: opacity 0.4s; animation: spin 4s linear infinite;
+    }
+    .project-card:hover::after { opacity: 1; }
+    @keyframes spin { to { --ang: 360deg; } }
+
+    /* Magnetic buttons */
+    .btn.magnetic { transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), background 0.25s, box-shadow 0.25s; }
+
+    /* Badge glow ring */
+    .badge { position: relative; }
+    .badge::before {
+      content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+      background: linear-gradient(90deg, transparent, #38bdf8, transparent); background-size: 200% 100%;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; animation: sweep 3s linear infinite;
+    }
+    @keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* Tech marquee */
+    .marquee { overflow: hidden; margin: -30px 0 60px; padding: 14px 0;
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+    .marquee-track { display: flex; gap: 14px; width: max-content; animation: marquee 38s linear infinite; }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .marquee .tech-pill { font-size: 0.9rem; padding: 8px 16px; white-space: nowrap; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* Scramble chars */
+    .scr { color: #38bdf8; -webkit-text-fill-color: #38bdf8; opacity: 0.8; }
+
+    /* Section title mask reveal */
+    .js .reveal .section-title { clip-path: inset(0 100% 0 0); transition: clip-path 1s cubic-bezier(0.77,0,0.18,1); }
+    .js .reveal.in .section-title { clip-path: inset(0 -10px -10px 0); }
+
     @media (prefers-reduced-motion: reduce) {
+      #net, .cur-dot, .cur-ring { display: none; }
+      body.has-cursor, body.has-cursor a { cursor: auto; }
+      .js .reveal .section-title { clip-path: none !important; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .js .reveal, .js .reveal .tech-pill { opacity: 1 !important; transform: none !important; }
       .section-title::after { transform: scaleX(1); }
@@ -411,6 +467,9 @@
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
   <div class="cursor-glow" id="glow"></div>
+  <canvas id="net"></canvas>
+  <div class="cur-dot" id="curDot"></div>
+  <div class="cur-ring" id="curRing"></div>
 
   <div class="container">
     <!-- Hero -->
@@ -457,6 +516,13 @@
       <div class="metric-card">
         <div class="metric-num" data-to="99.9" data-dec="1" data-suffix="%">99.9%</div>
         <div class="metric-label">Microservices Production Uptime</div>
+      </div>
+    </div>
+
+    <!-- Tech marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee">
+        <span class="tech-pill">Node.js</span><span class="tech-pill">NestJS</span><span class="tech-pill">TypeScript</span><span class="tech-pill">Apache Kafka</span><span class="tech-pill">React</span><span class="tech-pill">Next.js</span><span class="tech-pill">Angular</span><span class="tech-pill">RabbitMQ</span><span class="tech-pill">BullMQ</span><span class="tech-pill">Redis</span><span class="tech-pill">MySQL</span><span class="tech-pill">PostgreSQL</span><span class="tech-pill">Prisma</span><span class="tech-pill">Docker</span><span class="tech-pill">Jenkins</span><span class="tech-pill">Nginx</span><span class="tech-pill">WebSockets</span>
       </div>
     </div>
 
@@ -665,8 +731,105 @@
     }
     setTimeout(tick, 2200);
 
+    // Marquee: duplicate items for seamless loop
+    var mq = document.getElementById('marquee');
+    mq.innerHTML += mq.innerHTML;
+
+    // Name scramble / decode
+    var h1 = document.querySelector('.hero h1'), finalName = h1.textContent;
+    var glyphs = '!<>-_\\/[]{}=+*^?#01ABCDEF';
+    var frame = 0, total = 48;
+    function scramble() {
+      var out = '';
+      for (var i = 0; i < finalName.length; i++) {
+        var ch = finalName[i], revealAt = (i / finalName.length) * total * 0.8 + 6;
+        if (ch === ' ' || frame >= revealAt) out += ch;
+        else out += '<span class="scr">' + glyphs[(Math.random() * glyphs.length) | 0] + '</span>';
+      }
+      h1.innerHTML = out;
+      if (++frame <= total) requestAnimationFrame(function () { setTimeout(scramble, 28); });
+      else h1.textContent = finalName;
+    }
+    setTimeout(scramble, 200);
+    h1.addEventListener('mouseenter', function () { if (frame > total) { frame = 0; scramble(); } });
+
+    // Particle network background
+    var cv = document.getElementById('net'), cx = cv.getContext('2d'), W, H, pts = [], mouse = { x: -9999, y: -9999 };
+    function size() {
+      var dpr = Math.min(devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr;
+      cv.style.width = W + 'px'; cv.style.height = H + 'px'; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.min(90, Math.floor(W * H / 16000)); pts = [];
+      for (var i = 0; i < n; i++) pts.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35 });
+    }
+    size(); addEventListener('resize', size);
+    addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    document.addEventListener('mouseleave', function () { mouse.x = mouse.y = -9999; });
+    var LINK = 130;
+    function draw() {
+      cx.clearRect(0, 0, W, H);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        var dxm = p.x - mouse.x, dym = p.y - mouse.y, dm = Math.sqrt(dxm * dxm + dym * dym);
+        if (dm < 160) { p.x += dxm / dm * 0.6; p.y += dym / dm * 0.6; }
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        cx.fillStyle = 'rgba(56,189,248,0.7)'; cx.beginPath(); cx.arc(p.x, p.y, 1.6, 0, 6.283); cx.fill();
+        for (var j = i + 1; j < pts.length; j++) {
+          var q = pts[j], dx = p.x - q.x, dy = p.y - q.y, d = dx * dx + dy * dy;
+          if (d < LINK * LINK) {
+            cx.strokeStyle = 'rgba(56,189,248,' + (0.18 * (1 - Math.sqrt(d) / LINK)) + ')';
+            cx.lineWidth = 1; cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(q.x, q.y); cx.stroke();
+          }
+        }
+        if (dm < 200) {
+          cx.strokeStyle = 'rgba(129,140,248,' + (0.35 * (1 - dm / 200)) + ')';
+          cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(mouse.x, mouse.y); cx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    // Scroll parallax for blobs
+    var blobs = document.querySelectorAll('.blob');
+    addEventListener('scroll', function () {
+      var y = scrollY;
+      blobs.forEach(function (b, i) { b.style.translate = '0 ' + (y * (0.15 + i * 0.1) * (i % 2 ? -1 : 1)) + 'px'; });
+    }, { passive: true });
+
     // Cursor glow + card spotlight + tilt (pointer devices only)
     if (!matchMedia('(hover: hover)').matches) return;
+
+    // Custom cursor
+    document.body.classList.add('has-cursor');
+    var dot = document.getElementById('curDot'), ring = document.getElementById('curRing');
+    var rx = 0, ry = 0, tx = 0, ty = 0;
+    addEventListener('mousemove', function (e) {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+    }, { passive: true });
+    (function follow() {
+      rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
+      ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+      requestAnimationFrame(follow);
+    })();
+    document.querySelectorAll('a, .project-card, .tech-pill').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { ring.classList.add('big'); });
+      el.addEventListener('mouseleave', function () { ring.classList.remove('big'); });
+    });
+
+    // Magnetic buttons
+    document.querySelectorAll('.btn').forEach(function (b) {
+      b.classList.add('magnetic');
+      b.addEventListener('mousemove', function (e) {
+        var r = b.getBoundingClientRect();
+        var mx = e.clientX - r.left - r.width / 2, my = e.clientY - r.top - r.height / 2;
+        b.style.transform = 'translate(' + mx * 0.25 + 'px,' + my * 0.35 + 'px)';
+      });
+      b.addEventListener('mouseleave', function () { b.style.transform = ''; });
+    });
     var glow = document.getElementById('glow');
     addEventListener('mousemove', function (e) {
       glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
