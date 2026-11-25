@@ -283,10 +283,134 @@
       color: var(--accent);
       text-decoration: none;
     }
+
+    /* ================= Animations ================= */
+    /* Scroll progress bar */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+      background: linear-gradient(90deg, #0284c7, #38bdf8, #818cf8);
+      transform-origin: 0 50%; transform: scaleX(0);
+      z-index: 100; box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+    }
+
+    /* Floating background blobs */
+    .blob {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      z-index: -1; pointer-events: none; opacity: 0.55;
+    }
+    .blob-1 { width: 420px; height: 420px; background: rgba(2, 132, 199, 0.35); top: -120px; left: -100px; animation: drift1 22s ease-in-out infinite; }
+    .blob-2 { width: 380px; height: 380px; background: rgba(99, 102, 241, 0.3); bottom: -140px; right: -80px; animation: drift2 26s ease-in-out infinite; }
+    .blob-3 { width: 260px; height: 260px; background: rgba(16, 185, 129, 0.18); top: 45%; left: 55%; animation: drift3 30s ease-in-out infinite; }
+    @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(140px, 120px) scale(1.15); } }
+    @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-160px, -100px) scale(1.1); } }
+    @keyframes drift3 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(-120px, 80px); } 66% { transform: translate(90px, -60px); } }
+
+    /* Grid overlay */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    }
+
+    /* Cursor glow */
+    .cursor-glow {
+      position: fixed; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.09) 0%, transparent 60%);
+      pointer-events: none; z-index: -1; transform: translate(-50%, -50%);
+      left: -500px; top: -500px; transition: opacity 0.3s;
+    }
+
+    /* Hero entrance (stagger) */
+    .hero > * { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .hero > *:nth-child(1) { animation-delay: 0.05s; }
+    .hero > *:nth-child(2) { animation-delay: 0.15s; }
+    .hero > *:nth-child(3) { animation-delay: 0.3s; }
+    .hero > *:nth-child(4) { animation-delay: 0.45s; }
+    .hero > *:nth-child(5) { animation-delay: 0.6s; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+    /* Shimmering name */
+    .hero h1 {
+      background: linear-gradient(110deg, #ffffff 35%, #38bdf8 50%, #ffffff 65%, #94a3b8 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both, shimmer 6s linear 1.2s infinite;
+    }
+    @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+
+    /* Typing role */
+    .role-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem; color: var(--accent);
+      margin-bottom: 18px; min-height: 1.6em;
+    }
+    .role-line .caret {
+      display: inline-block; width: 2px; height: 1.1em; background: var(--accent);
+      margin-left: 3px; vertical-align: -3px; animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Buttons: sheen sweep */
+    .btn { position: relative; overflow: hidden; }
+    .btn::after {
+      content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,0.25), transparent);
+      transform: skewX(-20deg); transition: left 0.6s ease;
+    }
+    .btn:hover::after { left: 140%; }
+
+    /* Scroll reveal */
+    .js .reveal { opacity: 0; transform: translateY(36px) scale(0.98); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); transition-delay: var(--d, 0s); }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* Cards: spotlight + tilt */
+    .metric-card, .project-card, .skills-container { position: relative; overflow: hidden; }
+    .metric-card::before, .project-card::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(56,189,248,0.14), transparent 45%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .metric-card:hover::before, .project-card:hover::before { opacity: 1; }
+    .project-card { transition: transform 0.2s ease-out, border-color 0.25s, box-shadow 0.3s; will-change: transform; }
+    .project-card:hover { box-shadow: 0 20px 50px -20px rgba(2, 132, 199, 0.45); }
+    .metric-card { transition: border 0.3s, transform 0.3s; }
+    .metric-card:hover { transform: translateY(-4px); }
+
+    /* Section title underline grows in */
+    .section-title { position: relative; display: inline-block; }
+    .section-title::after {
+      content: ""; position: absolute; left: 0; bottom: -4px; height: 3px; width: 100%;
+      background: linear-gradient(90deg, #0284c7, #38bdf8); border-radius: 2px;
+      transform: scaleX(0); transform-origin: left; transition: transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s;
+    }
+    .reveal.in .section-title::after, html:not(.js) .section-title::after { transform: scaleX(1); }
+
+    /* Pills */
+    .tech-pill { transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s; }
+    .tech-pill:hover { transform: translateY(-2px); background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.45); color: #e0f2fe; }
+    .js .reveal .tech-pill { opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s, background 0.2s, border-color 0.2s, color 0.2s; }
+    .js .reveal.in .tech-pill { opacity: 1; transform: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .js .reveal, .js .reveal .tech-pill { opacity: 1 !important; transform: none !important; }
+      .section-title::after { transform: scaleX(1); }
+      .cursor-glow, .blob { display: none; }
+    }
   </style>
+  <script>document.documentElement.className = 'js';</script>
 </head>
 <body>
+  <div class="scroll-progress" id="progress"></div>
   <div class="gradient-mesh"></div>
+  <div class="grid-overlay"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="cursor-glow" id="glow"></div>
 
   <div class="container">
     <!-- Hero -->
@@ -296,6 +420,7 @@
         Available for Remote Part-Time & Contract Projects
       </div>
       <h1>SRITEJA GHANTA</h1>
+      <div class="role-line"><span id="typed">Full Stack Software Engineer</span><span class="caret"></span></div>
       <p>
         Senior Full Stack Software Engineer with <strong>4+ years of production experience</strong> specializing in high-throughput backend microservices, real-time distributed systems, and modular monorepos.
       </p>
@@ -318,19 +443,19 @@
     <!-- Metrics Grid -->
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-num">45%</div>
+        <div class="metric-num" data-to="45" data-suffix="%">45%</div>
         <div class="metric-label">Database Query Latency Reduction</div>
       </div>
       <div class="metric-card">
-        <div class="metric-num">10k+</div>
+        <div class="metric-num" data-to="10" data-suffix="k+">10k+</div>
         <div class="metric-label">Daily B2B Records Scraped & Enriched</div>
       </div>
       <div class="metric-card">
-        <div class="metric-num">&lt;100ms</div>
+        <div class="metric-num" data-to="100" data-prefix="&lt;" data-suffix="ms">&lt;100ms</div>
         <div class="metric-label">Sub-Second GPS Telemetry Latency</div>
       </div>
       <div class="metric-card">
-        <div class="metric-num">99.9%</div>
+        <div class="metric-num" data-to="99.9" data-dec="1" data-suffix="%">99.9%</div>
         <div class="metric-label">Microservices Production Uptime</div>
       </div>
     </div>
@@ -474,5 +599,92 @@
       <p>&copy; 2026 Sriteja Ghanta &bull; Hyderabad, India &bull; <a href="mailto:ghantasriteja1@gmail.com">ghantasriteja1@gmail.com</a></p>
     </footer>
   </div>
+
+  <script>
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Mark elements for scroll reveal (with stagger inside grids)
+    var groups = ['.metrics-grid > *', '.section-header', '.projects-grid > *', '.skills-category', 'footer'];
+    groups.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el, i) {
+        el.classList.add('reveal');
+        el.style.setProperty('--d', (i % 4) * 0.1 + 's');
+        el.querySelectorAll('.tech-pill').forEach(function (p, j) {
+          p.style.transitionDelay = (0.25 + j * 0.04) + 's';
+        });
+      });
+    });
+
+    // Count-up metrics
+    function countUp(el) {
+      var to = parseFloat(el.dataset.to), dec = +(el.dataset.dec || 0);
+      var pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+      var start = null, dur = 1600;
+      function step(t) {
+        if (!start) start = t;
+        var p = Math.min((t - start) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + (to * e).toFixed(dec) + suf;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        var n = en.target.querySelector('.metric-num[data-to]');
+        if (n && !reduce) countUp(n);
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+    // Scroll progress
+    var bar = document.getElementById('progress');
+    function onScroll() {
+      var h = document.documentElement.scrollHeight - innerHeight;
+      bar.style.transform = 'scaleX(' + (h > 0 ? scrollY / h : 0) + ')';
+    }
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    if (reduce) return;
+
+    // Typing role rotator
+    var roles = ['Full Stack Software Engineer', 'Node.js · NestJS · TypeScript', 'Kafka & Real-Time Systems', 'React · Next.js · Angular', 'Microservices Architect'];
+    var typed = document.getElementById('typed'), ri = 0, ci = roles[0].length, del = true;
+    function tick() {
+      var r = roles[ri];
+      ci += del ? -1 : 1;
+      typed.textContent = r.slice(0, ci);
+      var wait = del ? 35 : 70;
+      if (!del && ci === r.length) { del = true; wait = 1800; }
+      else if (del && ci === 0) { del = false; ri = (ri + 1) % roles.length; wait = 300; }
+      setTimeout(tick, wait);
+    }
+    setTimeout(tick, 2200);
+
+    // Cursor glow + card spotlight + tilt (pointer devices only)
+    if (!matchMedia('(hover: hover)').matches) return;
+    var glow = document.getElementById('glow');
+    addEventListener('mousemove', function (e) {
+      glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
+    }, { passive: true });
+
+    document.querySelectorAll('.metric-card, .project-card').forEach(function (card) {
+      var tilt = card.classList.contains('project-card');
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        card.style.setProperty('--mx', x + 'px'); card.style.setProperty('--my', y + 'px');
+        if (tilt) {
+          var rx = ((y / r.height) - 0.5) * -6, ry = ((x / r.width) - 0.5) * 6;
+          card.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-4px)';
+        }
+      });
+      card.addEventListener('mouseleave', function () { if (tilt) card.style.transform = ''; });
+    });
+  })();
+  </script>
 </body>
 </html>
